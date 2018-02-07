@@ -1,0 +1,25 @@
+import scrapy
+from Sample import SampleItem
+
+class SampleSpider(scrapy.Spider):
+    name = 'sample'
+  
+    def start_requests(self):
+        urls = {
+        sample_url1, sample_url2
+        }
+        for url in urls:
+            yield scrapy.Request(url=url, callback = self.parse)
+
+    def parse(self, response):
+        item = SampleItem()
+        titles = response.xpath("//div[@attr='sample']/text()")
+        for title in titles:
+            item['a'] = title.extract()
+            yield item
+           
+# ######################################
+         next_url = response.xpath("//a[@class='next']/@href").extract()
+         if next_url:
+            next_url = 'xxx' + next_url[0]
+            yield Request(next_url)
