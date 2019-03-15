@@ -59,3 +59,33 @@ forest_model.fit(train_X, train_y)
 melb_preds = forest_model.predict(val_X)
 print(mean_absolute_error(val_y, melb_preds))
 
+# Handle missing data
+missing_val_count_by_column = (data.isnull().sum())
+print(missing_val_count_by_column[missing_val_count_by_column > 0])
+
+# drop columns with missing values
+data_without_missing_values = original_data.dropna(axis=1)
+
+# drop the same columns in training dataset and a test dataset
+cols_with_missing = [col for col in original_data.columns 
+                                 if original_data[col].isnull().any()]
+reduced_original_data = original_data.drop(cols_with_missing, axis=1)
+reduced_test_data = test_data.drop(cols_with_missing, axis=1)
+
+# Imputation
+from sklearn.impute import SimpleImputer
+my_imputer = SimpleImputer()
+# default mean value
+imputed_X_train_plus = my_imputer.fit_transform(imputed_X_train_plus)
+imputed_X_test_plus = my_imputer.transform(imputed_X_test_plus)
+
+# For the sake of keeping the example simple, we'll use only numeric predictors. 
+melb_numeric_predictors = melb_predictors.select_dtypes(exclude=['object'])
+
+train_predictors.dtypes.sample(10)
+# The align command makes sure the columns show up in the same order in both datasets
+one_hot_encoded_training_predictors = pd.get_dummies(train_predictors)
+one_hot_encoded_test_predictors = pd.get_dummies(test_predictors)
+final_train, final_test = one_hot_encoded_training_predictors.align(one_hot_encoded_test_predictors,
+                                                                    join='left', 
+                                                                    axis=1)
